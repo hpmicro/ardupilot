@@ -303,7 +303,7 @@ public:
 
     bool logging_started(void);
 
-#if CONFIG_HAL_BOARD == HAL_BOARD_SITL || CONFIG_HAL_BOARD == HAL_BOARD_LINUX
+#if CONFIG_HAL_BOARD == HAL_BOARD_SITL || CONFIG_HAL_BOARD == HAL_BOARD_LINUX  || CONFIG_HAL_BOARD == HAL_BOARD_HPMICRO
     // currently only AP_Logger_File support this:
     void flush(void);
 #endif

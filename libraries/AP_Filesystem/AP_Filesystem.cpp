@@ -35,6 +35,9 @@ static AP_Filesystem_ESP32 fs_local;
 #elif AP_FILESYSTEM_POSIX_ENABLED
 #include "AP_Filesystem_posix.h"
 static AP_Filesystem_Posix fs_local;
+#elif AP_FILESYSTEM_HPM_ENABLED
+#include "AP_Filesystem_HPM.h"
+static AP_Filesystem_HPM fs_local;
 #else
 static AP_Filesystem_Backend fs_local;
 int errno;

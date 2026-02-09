@@ -18,7 +18,7 @@ AP_LoggerFileReader::AP_LoggerFileReader()
 
 AP_LoggerFileReader::~AP_LoggerFileReader()
 {
-    ::printf("Replay counts: %" PRIu64 " bytes  %u entries\n", bytes_read, message_count);
+    ::printf("Replay counts: %" PRIu64 " bytes  %u entries\n", bytes_read, (unsigned int)message_count);
 }
 
 bool AP_LoggerFileReader::open_log(const char *logfile)

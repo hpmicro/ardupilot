@@ -39,7 +39,7 @@
  * Major: For breaking changes of the structure
  * Minor: For new fields that does not brake the structure or corrections
  */
-const AP_FWVersion AP_FWVersion::fwver{
+__attribute__((weak)) const AP_FWVersion AP_FWVersion::fwver{
     // Version header struct
     .header = 0x61706677766572fb, // First 7 MSBs: "apfwver", LSB is the checksum of the previous string: 0xfb
     .header_version = 0x0200U, // Major and minor version

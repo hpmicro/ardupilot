@@ -28,13 +28,13 @@
 #define MAX_NAME_LEN 255
 #endif
 
-#if (CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS) || (CONFIG_HAL_BOARD == HAL_BOARD_ESP32)
+#if (CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS) || (CONFIG_HAL_BOARD == HAL_BOARD_ESP32) || (CONFIG_HAL_BOARD == HAL_BOARD_HPMICRO)
 #define DT_REG 0
 #define DT_DIR 1
 #define DT_LNK 10
 #endif
 
-#if CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS
+#if CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS || CONFIG_HAL_BOARD == HAL_BOARD_HPMICRO
 #if AP_FILESYSTEM_FATFS_ENABLED
 #include "AP_Filesystem_FATFS.h"
 #endif
@@ -44,7 +44,7 @@ struct dirent {
    uint8_t d_type;
 };
 
-#endif // HAL_BOARD_CHIBIOS
+#endif // HAL_BOARD_CHIBIOS || HAL_BOARD_HPMICRO
 
 #include <fcntl.h>
 #include <errno.h>

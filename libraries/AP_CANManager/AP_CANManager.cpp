@@ -37,6 +37,8 @@
 #elif CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS
 #include <hal.h>
 #include <AP_HAL_ChibiOS/CANIface.h>
+#elif CONFIG_HAL_BOARD == HAL_BOARD_HPMICRO
+#include <AP_HAL_HPMICRO/CANIface.h>
 #endif
 
 #include <AP_Common/ExpandingString.h>

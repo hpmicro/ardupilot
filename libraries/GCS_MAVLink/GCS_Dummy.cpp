@@ -11,7 +11,7 @@
 #include <AP_CheckFirmware/AP_CheckFirmwareDefine.h>
 #undef FORCE_VERSION_H_INCLUDE
 
-const struct GCS_MAVLINK::stream_entries GCS_MAVLINK::all_stream_entries[] {};
+__attribute__((weak)) const struct GCS_MAVLINK::stream_entries GCS_MAVLINK::all_stream_entries[] {};
 
 /*
   send_text implementation for dummy GCS

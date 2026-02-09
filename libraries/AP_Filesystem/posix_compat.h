@@ -79,6 +79,10 @@ int apfs_rename(const char *oldpath, const char *newpath);
 #define FILE APFS_FILE
 
 #ifndef __cplusplus
+#undef clearerr
+#undef ferror
+#undef feof
+#undef getc
 /*
   only redefine posix functions for C code (eg. lua).
   for C++ use the AP_Filsystem APIs

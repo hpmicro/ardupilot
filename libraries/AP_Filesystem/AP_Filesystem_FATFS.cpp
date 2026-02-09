@@ -12,12 +12,25 @@
 #include <AP_Common/time.h>
 
 #include <ff.h>
+#if CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS
 #include <AP_HAL_ChibiOS/sdcard.h>
+#elif CONFIG_HAL_BOARD == HAL_BOARD_HPMICRO
+#include "hpm_sdmmc_sd.h"
+#include "diskio.h"
+#include <AP_HAL_HPMICRO/sdcard.h>
+#endif
 #include <GCS_MAVLink/GCS.h>
+#if CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS
 #include <AP_HAL_ChibiOS/hwdef/common/stm32_util.h>
+#endif
 
+#if CONFIG_HAL_BOARD == HAL_BOARD_HPMICRO
+extern "C" bool mem_is_dma_safe(const void *addr, uint32_t size, bool filesystem_op);
+#endif
+
+extern const AP_HAL::HAL& hal;
 #if 0
-#define debug(fmt, args ...)  do {printf("%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## args); } while(0)
+#define debug(fmt, args ...)  do {hal.console->printf("%s:%d: " fmt "\n", __FUNCTION__, __LINE__, ## args); } while(0)
 #else
 #define debug(fmt, args ...)
 #endif

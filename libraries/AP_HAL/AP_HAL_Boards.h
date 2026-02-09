@@ -15,6 +15,7 @@
 // #define HAL_BOARD_F4LIGHT  11 // reserved
 #define HAL_BOARD_ESP32	   12
 #define HAL_BOARD_QURT     13
+#define HAL_BOARD_HPMICRO  14
 #define HAL_BOARD_EMPTY    99
 
 /* Default board subtype is -1 */
@@ -70,6 +71,8 @@
 #define HAL_BOARD_SUBTYPE_ESP32_NICK            6006
 #define HAL_BOARD_SUBTYPE_ESP32_S3DEVKIT        6007
 #define HAL_BOARD_SUBTYPE_ESP32_S3EMPTY         6008
+
+#define HAL_BOARD_SUBTYPE_HPMPILOTBF67          7001
 
 /* InertialSensor driver types */
 #define HAL_INS_NONE         0
@@ -140,6 +143,8 @@
     #include <AP_HAL/board/esp32.h>
 #elif CONFIG_HAL_BOARD == HAL_BOARD_QURT
     #include <AP_HAL/board/qurt.h>
+#elif CONFIG_HAL_BOARD == HAL_BOARD_HPMICRO
+    #include <AP_HAL/board/hpmicro.h>
 #else
 #error "Unknown CONFIG_HAL_BOARD type"
 #endif

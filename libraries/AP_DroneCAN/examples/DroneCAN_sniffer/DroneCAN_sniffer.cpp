@@ -17,6 +17,11 @@
 #elif CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS
 #include <hal.h>
 #include <AP_HAL_ChibiOS/CANIface.h>
+#elif CONFIG_HAL_BOARD == HAL_BOARD_HPMICRO
+#include <AP_HAL/AP_HAL.h>
+#include "AP_HAL_HPM.h"
+#include <AP_HAL_HPMICRO/CANIface.h>
+
 #endif
 
 void setup();
@@ -97,6 +102,7 @@ MSG_CB(uavcan_equipment_air_data_StaticTemperature, StaticTemperature)
 MSG_CB(uavcan_equipment_power_BatteryInfo, BatteryInfo);
 MSG_CB(uavcan_equipment_actuator_ArrayCommand, ArrayCommand)
 MSG_CB(uavcan_equipment_esc_RawCommand, RawCommand)
+MSG_CB(uavcan_equipment_esc_Status, Status);
 MSG_CB(uavcan_equipment_indication_LightsCommand, LightsCommand);
 MSG_CB(com_hex_equipment_flow_Measurement, Measurement);
 
@@ -175,6 +181,7 @@ void DroneCAN_sniffer::init(void)
     START_CB(uavcan_equipment_power_BatteryInfo, BatteryInfo);
     START_CB(uavcan_equipment_actuator_ArrayCommand, ArrayCommand);
     START_CB(uavcan_equipment_esc_RawCommand, RawCommand);
+    START_CB(uavcan_equipment_esc_Status, Status);
     START_CB(uavcan_equipment_indication_LightsCommand, LightsCommand);
     START_CB(com_hex_equipment_flow_Measurement, Measurement);
 
@@ -255,6 +262,7 @@ void loop(void)
         hal.scheduler->reboot();
     }
     hal.console->discard_input();
+    hal.scheduler->delay(10);
 }
 
 AP_HAL_MAIN();

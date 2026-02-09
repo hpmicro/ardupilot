@@ -153,7 +153,7 @@ const struct MultiplierStructure log_Multipliers[] = {
 // It is packed on ChibiOS to save flash space; however, this causes problems
 // when building the SITL on an Apple M1 CPU (and is also slower) so we do not
 // pack it by default
-#if CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS
+#if CONFIG_HAL_BOARD == HAL_BOARD_CHIBIOS || CONFIG_HAL_BOARD == HAL_BOARD_HPMICRO
 struct PACKED LogStructure {
 #else
 struct LogStructure {
