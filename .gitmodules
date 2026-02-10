@@ -42,3 +42,12 @@
 [submodule "modules/lwip"]
 	path = modules/lwip
 	url = https://github.com/ArduPilot/lwip.git
+[submodule "modules/littlefs"]
+	path = modules/littlefs
+	url = https://github.com/ArduPilot/littlefs.git
+[submodule "modules/tinyalloc"]
+	path = modules/tinyalloc
+	url = https://gitee.com/mirrors_thi-ng/tinyalloc.git
+[submodule "hpm_sdk"]
+	path = modules/hpm_sdk
+	url = https://gitee.com/hpmicro/hpm_sdk.git

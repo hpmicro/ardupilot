@@ -610,9 +610,20 @@ def add_dynamic_boards_esp32():
             else:
                 newclass = type(d, (esp32,), {'name': d})
 
+def add_dynamic_boards_hpmicro():
+    '''add boards based on existence of hwdef.dat in subdirectories for HPMicro'''
+    dirname, dirlist, filenames = next(os.walk('libraries/AP_HAL_HPMICRO/hwdef'))
+    for d in dirlist:
+        if d in _board_classes.keys():
+            continue
+        hwdef = os.path.join(dirname, d, 'hwdef.dat')
+        if os.path.exists(hwdef):
+            newclass = type(d, (hpmicro,), {'name': d})
+
 def get_boards_names():
     add_dynamic_boards_chibios()
     add_dynamic_boards_esp32()
+    add_dynamic_boards_hpmicro()
 
     return sorted(list(_board_classes.keys()), key=str.lower)
 
@@ -670,6 +681,144 @@ Please use a replacement build as follows:
 # NOTE: Keeping all the board definitions together so we can easily
 # identify opportunities to simplify common flags. In the future might
 # be worthy to keep board definitions in files of their own.
+
+class hpmicro(Board):
+    abstract = True
+    toolchain = 'riscv32-unknown-elf'
+
+    def configure(self, cfg):
+        super(hpmicro, self).configure(cfg)
+        if cfg.env.TOOLCHAIN:
+            self.toolchain = cfg.env.TOOLCHAIN
+        else:
+            # default tool-chain for hpmicro-based boards:
+            self.toolchain = 'riscv32-unknown-elf'
+
+    def configure_env(self, cfg, env):
+        env.BOARD_CLASS = "HPMICRO"
+        if cfg.options.disable_DroneCAN == 'True':
+            self.with_can = False
+            cfg.define('CANARD_ENABLE_CANFD', 0)
+        else:
+            self.with_can = True
+            cfg.define('CANARD_ENABLE_CANFD', 1)
+
+        if cfg.options.osd:
+            print(f"[HPMICRO] OSD enabled, checking for font files")
+            if not cfg.options.osd_fonts:
+                print(f"[HPMICRO] No custom OSD fonts specified, using default fonts")
+                font_count = 0
+                for f in os.listdir('libraries/AP_OSD/fonts'):
+                    if fnmatch.fnmatch(f, "font*bin"):
+                        print(f"[HPMICRO] Adding font file: {f}")
+                        cfg.env.ROMFS_FILES += [(f,'libraries/AP_OSD/fonts/'+f)]
+                        font_count += 1
+                print(f"[HPMICRO] Added {font_count} default font files to ROMFS")
+            else:
+                print(f"[HPMICRO] Using custom OSD fonts: {cfg.options.osd_fonts}")
+
+        cfg.define('CANARD_ENABLE_CANFD', 1)
+
+        def expand_path(p):
+            print("USING HPMicro SDK:"+str(env.sdk))
+            return cfg.root.find_dir(env.SDK+p).abspath()
+        try:
+            env.SDK = os.environ['HPM_SDK_BASE'] 
+        except:
+            env.SDK = cfg.srcnode.abspath()+"/modules/hpm_sdk"
+
+        super(hpmicro, self).configure_env(cfg, env)
+        cfg.load('hpmicro')
+        env.DEFINES.update(
+            CONFIG_HAL_BOARD = 'HAL_BOARD_HPMICRO',
+        )
+        if self.with_can == True:
+            env.DEFINES.update(
+                CANARD_MULTI_IFACE=1,
+                CANARD_IFACE_ALL = 0x3,
+                CANARD_ENABLE_CANFD=1,
+            )
+        env.DEFINES.update(
+            AP_AIRSPEED_ENABLED = 1,
+            )
+        tt = self.name[3:]
+
+        # this makes sure we get the correct subtype
+        env.DEFINES.update(
+            CONFIG_HAL_BOARD_SUBTYPE = 'HAL_BOARD_SUBTYPE_HPM%s' %  tt.upper() ,
+        )
+
+        env.DEFINES.update(AP_SIM_ENABLED = 0)
+
+        env.AP_LIBRARIES += [
+            'AP_HAL_HPMICRO',
+        ]
+
+        env.CFLAGS += [
+            '-fno-inline-functions',
+            '-fsingle-precision-constant',
+        ]
+        env.CFLAGS.remove('-Werror=undef')
+
+        env.CXXFLAGS += ["-DNEW_NOTHROW=new",
+                         '-g',
+                         '-ffunction-sections',
+                         '-fdata-sections',
+                         '-fno-exceptions',
+                         '-fno-rtti',
+                         '-nostdlib',
+                         '-Wno-mismatched-tags',
+                         '-fstrict-volatile-bitfields',
+                         '-Wno-sign-compare',
+                         '-fno-inline-functions',
+                         '-fsingle-precision-constant', # force const vals to be float , not double. so 100.0 means 100.0f 
+                         '-fno-threadsafe-statics']
+        env.CXXFLAGS.remove('-Werror=undef')
+        env.CXXFLAGS.remove('-Werror=shadow')
+        env.CXXFLAGS.remove('-Werror=cast-align')
+
+        if not cfg.env.DEBUG:
+            env.CXXFLAGS += [
+                '-O2',
+            ]
+            env.CFLAGS += [
+                '-O2',
+            ]
+        env.AP_PROGRAM_AS_STLIB = True
+        # wrap malloc to ensure memory is zeroed
+        # note that this also needs to be done in the CMakeLists.txt files
+        env.LINKFLAGS += ['-Wl,--wrap,malloc', '-Wl,--wrap,calloc', '-Wl,--wrap,free', '-Wl,--wrap,_malloc_r', '-Wl,--wrap,realloc', '-Wl,--wrap,_realloc_r', '-Wl,--wrap,printf']
+
+        # TODO: remove once hwdef.dat support is in place
+        defaults_file = 'libraries/AP_HAL_HPMICRO/hwdef/%s/defaults.parm' % self.get_name()
+        if os.path.exists(defaults_file):
+            env.ROMFS_FILES += [('defaults.parm', defaults_file)]
+            env.DEFINES.update(
+                HAL_PARAM_DEFAULTS_PATH='"@ROMFS/defaults.parm"',
+            )
+
+        env.INCLUDES += [
+                cfg.srcnode.find_dir('libraries/AP_HAL_HPMICRO/cmake/src').abspath(),
+                cfg.srcnode.find_dir('libraries/AP_HAL_HPMICRO/boards').abspath(),
+                cfg.srcnode.find_dir('libraries/AP_HAL_HPMICRO').abspath(),
+            ]
+
+    def pre_build(self, bld):
+        '''pre-build hook that gets called before dynamic sources'''
+        from waflib.Context import load_tool
+        module = load_tool('hpmicro', [], with_sys_path=True)
+        fun = getattr(module, 'pre_build', None)
+        if fun:
+            fun(bld)
+        super(hpmicro, self).pre_build(bld)
+
+
+    def build(self, bld):
+        super(hpmicro, self).build(bld)
+        bld.load('hpmicro')
+
+    def get_name(self):
+        return self.__class__.__name__
 
 class sitl(Board):
 
