@@ -48,6 +48,6 @@
 [submodule "modules/tinyalloc"]
 	path = modules/tinyalloc
 	url = https://gitee.com/mirrors_thi-ng/tinyalloc.git
-[submodule "hpm_sdk"]
+[submodule "modules/hpm_sdk"]
 	path = modules/hpm_sdk
-	url = https://gitee.com/hpmicro/hpm_sdk.git
+	url = https://github.com/hpmicro/hpm_sdk.git
