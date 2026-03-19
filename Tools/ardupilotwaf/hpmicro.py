@@ -94,8 +94,8 @@ def configure(cfg):
     env.DEFINES+=['USE_NONVECTOR_MODE=1', 'DISABLE_IRQ_PREEMPTIVE=1', 'CONFIG_FREERTOS=1']
     env.AP_PROGRAM_FEATURES += ['hpmicro_ap_program']
     
-    env.CFLAGS+=['-mabi=ilp32d', '-march=rv32gc_zicsr_zifencei '];
-    env.CXXFLAGS+=['-mabi=ilp32d', '-march=rv32gc_zicsr_zifencei '];
+    env.CFLAGS+=['-mabi=ilp32d', '-march=rv32imafdc_zicsr_zifencei'];
+    env.CXXFLAGS+=['-mabi=ilp32d', '-march=rv32imafdc_zicsr_zifencei'];
 
     env.BUILDROOT = bldpath('')
     env.SRCROOT = srcpath('')
